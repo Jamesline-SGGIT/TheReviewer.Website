@@ -1,0 +1,46 @@
+﻿@using System.IO
+@using BlazorInputFile
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Services.Common.AppDataService AppDataService
+
+<h5>FileReader</h5>
+<p>@FileType</p>
+<InputFile OnChange="HandleSelection" />
+
+@code {
+    [Parameter]
+    public string FileType { get; set; }
+
+    string status;
+    string fileStatus="";
+    string decodeStatus;
+    bool fileloaded;
+    bool filedecoded;
+    BlazorInputFile.IFileListEntry file;
+    MemoryStream memoryStream = new MemoryStream();
+
+    async Task HandleSelection(IFileListEntry[] files)
+    {
+        status = "";
+        fileloaded = false;
+        file = files.FirstOrDefault();
+        if (file != null)
+        {
+            var ms = new MemoryStream();
+            memoryStream = ms;
+
+            await file.Data.CopyToAsync(ms);
+            AppDataService.FileMem = ms;
+            status = $"Finished loading {file.Size} bytes from {file.Name}";
+            await localStorage.SetItemAsync("filestatus", status);
+
+            Console.WriteLine("******************************************************");
+            Console.WriteLine(status);
+
+            AppDataService.MasterStatus = status;
+            AppDataService.FileLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+}

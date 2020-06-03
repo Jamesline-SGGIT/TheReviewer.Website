@@ -1,0 +1,70 @@
+﻿@using static CommonServices.ExcelConversionService.TablesModel;
+@using Services.Common;
+
+<h3>Review results</h3>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            @foreach (var cell in tableModel.Header.Cells)
+            {
+                <th>
+                    @cell.Value
+                </th>
+            }
+        </tr>
+    </thead>
+
+    @foreach (var Row in tableModel.Body)
+    {
+        <tbody>
+            <tr>
+                @foreach (var cell in Row.Cells)
+                {
+                    @if (CommonUtils.IsNumeric(cell.Value))
+                    {
+                        <td>
+                            @cell.Value
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="table-primary">
+                            @cell.Value
+                        </td>
+                    }
+                }
+            </tr>
+        </tbody>
+    }
+    <tbody>
+        @if (tableModel.Other != null)
+        {
+        <tr>
+            @foreach (var cell in tableModel.Other.Cells)
+            {
+                <td>
+                    @cell.Value
+                </td>
+            }
+        </tr>
+        }
+        <tr class=" table-success">
+            @foreach (var cell in tableModel.Footer.Cells)
+            {
+                <td>
+                    @cell.Value
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>
+
+@code {
+    TableModel tableModel = new TableModel();
+    [Parameter] public TableModel tableDisplay { get; set; }
+    protected override void OnParametersSet()
+    {
+        tableModel = tableDisplay;
+    }
+
+}

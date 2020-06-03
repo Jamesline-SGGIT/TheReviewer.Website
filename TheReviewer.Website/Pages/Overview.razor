@@ -1,0 +1,59 @@
+﻿@page "/Overview"
+@*@using TheReviewer.Website.Components
+@using static CommonServices.ExcelConversionService.TablesModel
+@using System.Diagnostics
+@using System.IO
+
+@inject Services.Common.AppDataService AppDataService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<h3>Geco Reader</h3>
+<p><FileReader FileType="Geco" /></p>
+@if (AppDataService.FileLoaded == true && FileLoaded1 == false)
+{
+    Debug.WriteLine("Geco File Loaded");
+    FileLoaded1 = true;
+    <button class="btn btn-primary" @onclick="DecodeFile">Decode</button>
+    <hr />
+    AppDataService.FileLoaded = false;
+}
+<h3>Coge Reader</h3>
+<p><FileReader FileType="Coge" /></p>
+@if (AppDataService.FileLoaded == true && FileLoaded1 == true)
+{
+    Debug.WriteLine("Coge File Loaded");
+    FileLoaded1 = true;
+    <button class="btn btn-primary" @onclick="DecodeFile">Decode</button>
+    <hr />
+    AppDataService.FileLoaded = false;
+}
+@code {
+    TableModel gecoTableModel = new TableModel();
+    TableModel cogeTableModel = new TableModel();
+    bool FileLoaded1 = false;
+    bool fileDecoded;
+
+    protected override void OnInitialized()
+    {
+        AppDataService.OnChange += StateHasChanged;
+        AppDataService.FileLoaded = false;
+        AppDataService.MasterStatus = "";
+        fileDecoded = false;
+    }
+
+    async Task DecodeFile()
+    {
+        AppDataService.GecoMem = AppDataService.FileMem;
+        gecoTableModel = Services.GecoBuilderService.GecoFetcher(AppDataService.FileMem);
+        if (gecoTableModel == null)
+        {
+
+        }
+        else
+        {
+            fileDecoded = true;
+            AppDataService.GecoTable = gecoTableModel;
+            // Services.GecoBuilderService.SaveGecoExcelFile(tableModel);
+        }
+    }
+}*@
